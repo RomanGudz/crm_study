@@ -91,3 +91,24 @@ const goods = [
 ]
 
 renderGoods(goods);
+
+
+const btnAddGood = document.querySelector('.panel__add-goods');
+const modal = document.querySelector('.overlay');
+const btnClose = document.querySelector('.modal__close');
+
+btnAddGood.addEventListener('click', () => {
+  modal.classList.add('active');
+});
+
+btnClose.addEventListener('click', () => {
+  modal.classList.remove('active');
+});
+
+modal.children[0].addEventListener('click', event => {
+  event.stopPropagation();
+});
+
+modal.addEventListener('click', () => {
+  modal.classList.remove('active');
+});
