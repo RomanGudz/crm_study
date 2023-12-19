@@ -1,30 +1,34 @@
 'use strict';
 
 const createRow = (obj) => {
-  const tableBody = document.querySelector('.table__body');
-  const firstRow = document.querySelector('.table__body tr:first-child');
-  const newRow = firstRow.cloneNode(true);
-  const newSpan = `<span class="table__cell-id">id: ${obj.id}</span>`
-  newRow.querySelectorAll('.table__cell')[0].textContent = obj.id;
-  newRow.querySelectorAll('.table__cell')[1].textContent = obj.title;
-  newRow.querySelectorAll('.table__cell')[1].insertAdjacentHTML('afterbegin', newSpan)
-  newRow.querySelectorAll('.table__cell')[2].textContent = obj.category;
-  newRow.querySelectorAll('.table__cell')[3].textContent = obj.units;
-  newRow.querySelectorAll('.table__cell')[4].textContent = obj.count;
-  newRow.querySelectorAll('.table__cell')[5].textContent = `$${obj.price}`;
-  newRow.querySelectorAll('.table__cell')[6].textContent = `$${obj.price * obj.count}`;
-  console.log('getTableBody: ', tableBody);
-  console.log(newRow.querySelectorAll('.table__cell')[1]);
+  const addTr = document.createElement('tr');
+  addTr.innerHTML = `
+  <td class="table__cell">${obj.id}</td>
+                <td class="table__cell table__cell_left table__cell_name" data-id="${obj.id}">
+                  <span class="table__cell-id">id: ${obj.id}</span>
+                  ${obj.title}
+                </td>
+                <td class="table__cell table__cell_left">${obj.category}</td>
+                <td class="table__cell">${obj.units}</td>
+                <td class="table__cell">${obj.count}</td>
+                <td class="table__cell">$${obj.price}</td>
+                <td class="table__cell">$${obj.price * obj.count}</td>
+                <td class="table__cell table__cell_btn-wrapper">
+                  <button class="table__btn table__btn_pic"></button>
+                  <button class="table__btn table__btn_edit"></button>
+                  <button class="table__btn table__btn_del"></button>
+                </td>`;
 
-  console.log('newRow: ', newRow);
-
-  return tableBody.insertAdjacentElement('beforeend', newRow)
+  return addTr;
 };
 
 const renderGoods = (array) => {
-  for (let i = 0; i < array.length; i++) {
-    createRow(array[i]);
-  };
+  const tableBody = document.querySelector('.table__body');
+
+  array.forEach((item) => {
+    const newRow = createRow(item);
+    tableBody.appendChild(newRow);
+  });
 };
 
 const goods = [
