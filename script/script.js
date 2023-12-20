@@ -21,9 +21,8 @@ const createRow = (obj) => {
 
   return addTr;
 };
-
+const tableBody = document.querySelector('.table__body');
 const renderGoods = (array) => {
-  const tableBody = document.querySelector('.table__body');
 
   array.forEach((item) => {
     const newRow = createRow(item);
@@ -92,23 +91,14 @@ const goods = [
 
 renderGoods(goods);
 
+const btnDelete = document.querySelectorAll('.table__btn_del');
 
-const btnAddGood = document.querySelector('.panel__add-goods');
-const modal = document.querySelector('.overlay');
-const btnClose = document.querySelector('.modal__close');
-
-btnAddGood.addEventListener('click', () => {
-  modal.classList.add('active');
+btnDelete.forEach(del => {
+  del.addEventListener('click', e => {
+    const target = e.target;
+    target.closest('tr').remove();
+    console.log(tableBody.textContent)
+  });
 });
 
-btnClose.addEventListener('click', () => {
-  modal.classList.remove('active');
-});
 
-modal.children[0].addEventListener('click', event => {
-  event.stopPropagation();
-});
-
-modal.addEventListener('click', () => {
-  modal.classList.remove('active');
-});
