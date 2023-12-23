@@ -9,13 +9,31 @@ const btnAddGood = document.querySelector('.panel__add-goods');
 const modal = document.querySelector('.overlay');
 const btnClose = document.querySelector('.modal__close');
 
-btnAddGood.addEventListener('click', () => {
+const openModal = () => {
   modal.classList.add('active');
-});
+};
+
+const closeModal = () => {
+  modal.classList.remove('active');
+};
+btnAddGood.addEventListener('click', openModal);
 
 modal.addEventListener('click', e => {
   const target = e.target;
   if (target === modal || target.closest('.modal__close')) {
-    modal.classList.remove('active');
+    closeModal()
   };
 });
+
+
+
+modalDiscount.addEventListener('click', () => {
+  if (modalDiscount.checked) {
+    modalDiscountInput.removeAttribute('disabled');
+  }
+  else {
+    modalDiscountInput.value = '';
+    modalDiscountInput.setAttribute('disabled', 'disabled');
+  }
+
+})
