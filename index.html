@@ -13,15 +13,19 @@
 
   <link rel="stylesheet" href="css/index.css">
 
-  <script src="./script/modal.js" defer></script>
-  <script src="./script/script.js" defer></script>
+  <script type="module" src="./script/script.js"></script>
   <title>CMS</title>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      cmsInit('#app');
+    })
+  </script>
 </head>
 
 <body>
 
-  <section class="cms">
-    <div class="container">
+  <section id="app" class="cms">
+    <!-- <div class="container">
       <header class="cms__header">
         <h1 class="cms__title">CMS - ShopOnline</h1>
 
@@ -54,7 +58,7 @@
               </tr>
             </thead>
             <tbody class="table__body">
-              <!-- <tr>
+              <tr>
                 <td class="table__cell">1</td>
                 <td class="table__cell table__cell_left table__cell_name" data-id="24601654816512">
                   <span class="table__cell-id">id: 24601654816512</span>
@@ -86,7 +90,7 @@
                   <button class="table__btn table__btn_edit"></button>
                   <button class="table__btn table__btn_del"></button>
                 </td>
-              </tr> -->
+              </tr>
             </tbody>
           </table>
 
@@ -101,11 +105,11 @@
         </div>
       </div>
 
-    </div>
+    </div> -->
   </section>
 
 
-  <div class="overlay ">
+  <!-- <div class="overlay">
     <div class="overlay__modal modal">
       <button class="modal__close">
         <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,7 +180,7 @@
         </div>
       </form>
     </div>
-  </div>
+  </div> -->
 
 
 </body>
