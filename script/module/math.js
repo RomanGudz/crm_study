@@ -12,21 +12,8 @@ const tableTotalPrice = (goods) => {
   });
   return total;
 };
-const totalPriceForm = (modal) => {
-  const price = modal.querySelector('.modal__total-price');
-  console.log('price: ', price);
-  // console.log('price: ', price);
-  // form.addEventListener('change', e => {
-  //   form.total.value = `$  ${e.target.value * form.count.value}`;
-  // });
-
-  //   form.count.addEventListener('change', e => {
-  //     form.total.value = `$ ${e.target.value * form.price.value}`;
-  //   });
-};
 
 export default {
   randomNumber,
   tableTotalPrice,
-  totalPriceForm,
 };

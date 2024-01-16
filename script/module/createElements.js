@@ -2,7 +2,6 @@ import math from './math.js';
 const {
   randomNumber,
   tableTotalPrice,
-  totalPriceForm,
 } = math;
 
 const createContainer = () => {
@@ -32,7 +31,7 @@ const totalPriceElem = (goods) => {
   return total;
 };
 const createInput = params => {
-  const { className, type, id, name, placeholder } = params;
+  const { className, type, id, name, placeholder, required } = params;
   const input = document.createElement('input');
   input.classList.add(className);
   const attributes = {
@@ -40,6 +39,7 @@ const createInput = params => {
     ...(id && { id }),
     ...(name && { name }),
     ...(placeholder && { placeholder }),
+    ...(required && { required }),
   };
   for (const [key, value] of Object.entries(attributes)) {
     input.setAttribute(key, value);
@@ -48,7 +48,7 @@ const createInput = params => {
 };
 
 const createLabel = params => {
-  const { className, atributeFor, classNameSpan, spanText, } = params;
+  const { className, atributeFor, classNameSpan, spanText } = params;
   const label = document.createElement('label');
   label.classList.add(...className);
   label.htmlFor = atributeFor;
@@ -64,7 +64,7 @@ const createButton = paramsClass => {
   const classBtn = {
     ...(classTable && { classTable }),
     classButton,
-  }
+  };
   button.textContent = text ? text : '';
   for (const [_, value] of Object.entries(classBtn)) {
     button.classList.add(value);
@@ -173,12 +173,10 @@ const createRow = (item, index) => {
   const tdBtnWrapper = document.createElement('td');
   tdBtnWrapper.classList.add('table__cell', 'table__cell_btn-wrapper');
   const tdButtons = ['table__btn_pic', 'table__btn_edit', 'table__btn_del'];
-  const buttons = tdButtons.map((elem) => {
-    return createButton({
-      classTable: 'table__btn',
-      classButton: elem,
-    });
-  });
+  const buttons = tdButtons.map((elem) => createButton({
+    classTable: 'table__btn',
+    classButton: elem,
+  }));
   tdBtnWrapper.append(...buttons);
   tr.append(
     tdSerialNumber,
@@ -193,7 +191,7 @@ const createRow = (item, index) => {
   return tr;
 };
 const renderGoods = (array) => {
-  const rows = array.map((item, index) => createRow(item, index))
+  const rows = array.map((item, index) => createRow(item, index));
   return rows;
 };
 const createSubPanel = () => {
@@ -209,7 +207,7 @@ const createSubPanel = () => {
     choicePages,
     pages,
     createLink('sub-panel__left', '#'),
-    createLink('sub-panel__right', '#')
+    createLink('sub-panel__right', '#'),
   );
   return subPanel;
 };
@@ -227,6 +225,7 @@ const createFildset = () => {
     type: 'text',
     name: 'name',
     id: 'name',
+    required: 'required',
   }));
   const labelCategory = createLabel({
     className: ['modal__label', 'modal__label_category'],
@@ -239,6 +238,7 @@ const createFildset = () => {
     type: 'text',
     name: 'category',
     id: 'category',
+    required: 'required',
   }));
   const labelDescription = createLabel({
     className: ['modal__label', 'modal__label_description'],
@@ -250,6 +250,7 @@ const createFildset = () => {
   textAreaDescription.classList.add('modal__input', 'modal__input_textarea');
   textAreaDescription.setAttribute('name', 'description');
   textAreaDescription.setAttribute('id', 'description');
+  textAreaDescription.setAttribute('required', 'required');
   labelDescription.append(textAreaDescription);
   const labelUnits = createLabel({
     className: ['modal__label', 'modal__label_units'],
@@ -262,6 +263,7 @@ const createFildset = () => {
     type: 'text',
     name: 'units',
     id: 'units',
+    required: 'required',
   }));
   const labelCount = createLabel({
     className: ['modal__label', 'modal__label_count'],
@@ -271,9 +273,10 @@ const createFildset = () => {
   });
   labelCount.append(createInput({
     className: 'modal__input',
-    type: 'text',
+    type: 'number',
     name: 'count',
     id: 'count',
+    required: 'required',
   }));
   const labelPrice = createLabel({
     className: ['modal__label', 'modal__label_price'],
@@ -283,9 +286,10 @@ const createFildset = () => {
   });
   labelPrice.append(createInput({
     className: 'modal__input',
-    type: 'text',
+    type: 'number',
     name: 'price',
     id: 'price',
+    required: 'required',
   }));
   const labelImage = createLabel({
     className: ['modal__label', 'modal__label_file'],
@@ -355,8 +359,8 @@ const formGood = () => {
   const totalPrice = document.createElement('output');
   totalPrice.classList.add('modal__total-price');
   totalPrice.setAttribute('name', 'total');
-  totalPrice.textContent = `$ ${totalPriceForm()}`;
-  labelFooter.append(totalPrice)
+  totalPrice.textContent = '$ 0';
+  labelFooter.append(totalPrice);
   modalFooter.append(labelFooter);
   const submitBtn = createButton({
     text: 'Добавить товар',
@@ -401,4 +405,4 @@ export default {
   createSubPanel,
   modalForm,
   createRow,
-}
+};

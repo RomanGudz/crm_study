@@ -2,7 +2,6 @@ import math from './math.js';
 import createElements from './createElements.js';
 const {
   tableTotalPrice,
-  totalPriceForm,
 } = math;
 const {
   createRow,
@@ -40,16 +39,22 @@ const activeDiscount = () => {
 };
 const addNewGoodPage = (goods, newGood, tableBody) => {
   tableBody.append(createRow(newGood, (goods.length - 1)));
+  console.log('goods: ', goods);
   tableTotalPrice(goods);
 };
 const submitForm = (modal, tbody, goods) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
+  form.price.addEventListener('change', e => {
+    form.total.value = `$ ${e.target.value * form.count.value}`;
+  });
 
+  form.count.addEventListener('change', e => {
+    form.total.value = `$ ${e.target.value * form.price.value}`;
+  });
   modal.addEventListener('submit', e => {
     const target = e.target;
     e.preventDefault();
-    totalPriceForm(modal)
     const formData = new FormData(target);
     formData.set('discount', discountCheckbox.checked);
     formData.set('title', target.name.value);
@@ -82,6 +87,5 @@ export default {
   controlModal,
   activeDiscount,
   submitForm,
-  addNewGoodPage,
   deleteGood,
 };

@@ -21,7 +21,6 @@ export const renderCMS = (app, goods) => {
   const subPanel = createSubPanel();
   const modal = modalForm();
   const { createWrapper, tbody } = createTableWrapper();
-
   tbody.append(...row);
   divGoods.append(createWrapper, subPanel);
   header.append(title, total);
