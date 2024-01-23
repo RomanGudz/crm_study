@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 
 const goods = [
   {
@@ -10,7 +11,7 @@ const goods = [
     'count': 3,
     'units': 'шт',
     'images': {
-      'small': 'img/smrtxiaomi11t-m.jpg',
+      'small': 'https://img.05.ru/resize/u7zyEwvLe6DEZkBmoqi8LdVBJLk8tmsEwverN0l2aMo//rs:fit:591:800:0:0/q:80/bG9jYWw6Ly8vdXBsb2FkL2libG9jay8wMDAwMDE2MTMxMS8xLmpwZw',
       'big': 'img/smrtxiaomi11t-b.jpg',
     },
   },
@@ -24,7 +25,7 @@ const goods = [
     'count': 1,
     'units': 'шт',
     'images': {
-      'small': 'img/cheetancar-m.jpg',
+      'small': 'https://ae04.alicdn.com/kf/S3ca7a87f65df4a248c50b54260176da1y.jpg',
       'big': 'img/cheetancar-b.jpg',
     },
   },
@@ -38,7 +39,7 @@ const goods = [
     'count': 4,
     'units': 'шт',
     'images': {
-      'small': 'img/tvboxmecool-m.jpg',
+      'small': 'https://tvdroid.ru/image/catalog/box/mecool-k2-pro/mecool-kii-prodvb-t2-2.jpg',
       'big': 'img/tvboxmecool-b.jpg',
     },
   },
@@ -52,7 +53,7 @@ const goods = [
     'count': 420,
     'units': 'v',
     'images': {
-      'small': 'img/lan_proconnect43-3-25.jpg',
+      'small': 'https://satro-paladin.com/_img/satro/goods/0/368/00-00008368/a_01-0043-3-25.png',
       'big': 'img/lan_proconnect43-3-25-b.jpg',
     },
   },

@@ -177,6 +177,8 @@ const createRow = (item, index) => {
     classTable: 'table__btn',
     classButton: elem,
   }));
+  buttons[0].setAttribute('data-pic', item.images.small);
+
   tdBtnWrapper.append(...buttons);
   tr.append(
     tdSerialNumber,

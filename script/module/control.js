@@ -82,10 +82,25 @@ const deleteGood = (goods) => {
   });
 };
 
+const openPic = () => {
+  const openPic = document.querySelectorAll('.table__btn_pic')
+  openPic.forEach((button) => {
+    button.addEventListener('click', e => {
+      const target = e.target;
+      const url = target.getAttribute('data-pic');
+      const screenY = (screen.height / 2) / 2;
+      const screenX = (screen.width / 2) / 2;
+      open(url, 'about:blank',
+        `width=800,height=600,top=${screenY},left=${screenX}`);
+    });
+  });
+}
+
 
 export default {
   controlModal,
   activeDiscount,
   submitForm,
   deleteGood,
+  openPic,
 };

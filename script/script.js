@@ -7,6 +7,7 @@ const {
   activeDiscount,
   submitForm,
   deleteGood,
+  openPic,
 } = control;
 {
   const initApp = (selectorApp) => {
@@ -17,6 +18,7 @@ const {
     activeDiscount(modal);
     deleteGood(data.goods);
     submitForm(modal, tbody, data.goods);
+    openPic();
   };
   window.cmsInit = initApp;
 }
