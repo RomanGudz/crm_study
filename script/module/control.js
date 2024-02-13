@@ -3,9 +3,11 @@ import createElements from './createElements.js';
 const {
   tableTotalPrice,
 } = math;
+
 const {
   createRow,
 } = createElements;
+
 const controlModal = (modal) => {
   const openModal = () => {
     modal.classList.add('active');
@@ -45,12 +47,25 @@ const addNewGoodPage = (goods, newGood, tableBody) => {
 const submitForm = (modal, tbody, goods) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
+  const img = document.querySelector('.image-container');
+  const errImg = document.querySelector('.err-add-image');
   form.price.addEventListener('change', e => {
     form.total.value = `$ ${e.target.value * form.count.value}`;
   });
 
   form.count.addEventListener('change', e => {
     form.total.value = `$ ${e.target.value * form.price.value}`;
+  });
+  form.image.addEventListener('change', () => {
+    const image = form.image.files[0];
+    if (image.size > 1000000) {
+      errImg.style.display = 'block';
+      img.style.display = 'none';
+    } else {
+      img.src = URL.createObjectURL(image);
+      errImg.style.display = 'none';
+      img.style.display = 'block';
+    }
   });
   modal.addEventListener('submit', e => {
     const target = e.target;
@@ -83,7 +98,7 @@ const deleteGood = (goods) => {
 };
 
 const openPic = () => {
-  const openPic = document.querySelectorAll('.table__btn_pic')
+  const openPic = document.querySelectorAll('.table__btn_pic');
   openPic.forEach((button) => {
     button.addEventListener('click', e => {
       const target = e.target;

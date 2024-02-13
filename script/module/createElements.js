@@ -315,6 +315,8 @@ const createFildset = () => {
     labelDiscount(),
     labelCount,
     labelPrice,
+    modalImg(),
+    errorAddImg(),
     labelImage,
     inputImage,
   );
@@ -394,6 +396,19 @@ const modalForm = () => {
   modal.append(buttonClose, modalTop, formGood());
   overlay.append(modal);
   return overlay;
+};
+
+const modalImg = () => {
+  const createImg = document.createElement('img');
+  createImg.classList.add('image-container');
+  return createImg;
+};
+
+const errorAddImg = () => {
+  const p = document.createElement('p');
+  p.classList.add('err-add-image');
+  p.textContent = 'Изображение не должно превышать размер 1 Мб';
+  return p;
 };
 
 export default {
