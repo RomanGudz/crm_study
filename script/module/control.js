@@ -1,12 +1,17 @@
-import math from './math.js';
 import createElements from './createElements.js';
-const {
-  tableTotalPrice,
-} = math;
+import data from './data.js';
 
 const {
-  createRow,
+  renderGoods,
+  deleteModal,
+  totalPriceElem,
+  modalError,
 } = createElements;
+
+const {
+  toBase64,
+} = data;
+
 
 const controlModal = (modal) => {
   const openModal = () => {
@@ -39,15 +44,14 @@ const activeDiscount = () => {
     }
   });
 };
-const addNewGoodPage = (goods, newGood, tableBody) => {
-  tableBody.append(createRow(newGood, (goods.length - 1)));
-  console.log('goods: ', goods);
-  tableTotalPrice(goods);
-};
-const submitForm = (modal, tbody, goods) => {
+// const addNewGoodPage = (goods, newGood, tableBody) => {
+//   tableBody.append(createRow(newGood, (goods.length - 1)));
+//   totalPriceElem();
+// };
+const submitForm = (modal, tbody, goods, loadGods) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
-  const img = document.querySelector('.image-container');
+
   const errImg = document.querySelector('.err-add-image');
   form.price.addEventListener('change', e => {
     form.total.value = `$ ${e.target.value * form.count.value}`;
@@ -58,6 +62,7 @@ const submitForm = (modal, tbody, goods) => {
   });
   form.image.addEventListener('change', () => {
     const image = form.image.files[0];
+    const img = document.querySelector('.image-container');
     if (image.size > 1000000) {
       errImg.style.display = 'block';
       img.style.display = 'none';
@@ -67,31 +72,49 @@ const submitForm = (modal, tbody, goods) => {
       img.style.display = 'block';
     }
   });
-  modal.addEventListener('submit', e => {
+  modal.addEventListener('submit', async e => {
     const target = e.target;
     e.preventDefault();
     const formData = new FormData(target);
     formData.set('discount', discountCheckbox.checked);
-    formData.set('title', target.name.value);
     const newGood = Object.fromEntries(formData);
-    goods.push(newGood);
-    addNewGoodPage(goods, newGood, tbody);
-    form.reset();
-    document.querySelector('.overlay').classList.remove('active');
+    const imgTobase64 = await toBase64(newGood.image);
+    newGood.image = imgTobase64;
+    const { data, response } = await loadGods({
+      requestMethod: 'POST', requestBody: newGood,
+    },
+      (err) => {
+        if (err) {
+          console.log('err: ', err);
+          modalError();
+        }
+      },
+    );
+    if (response.ok) {
+      console.log(data.goods);
+      renderGoods(data.goods);
+      form.reset();
+      document.querySelector('.overlay').classList.remove('active');
+    }
   });
 };
-const deleteGood = (goods) => {
+
+const deleteGood = (goods, calback) => {
   const btnDelete = document.querySelectorAll('.table__btn_del');
   btnDelete.forEach(del => {
-    del.addEventListener('click', e => {
+    del.addEventListener('click', async e => {
       const target = e.target;
       const row = target.closest('tr');
       if (row) {
         const rowIndex = Array.from(row.parentNode.children).indexOf(row);
-        goods.splice(rowIndex, 1);
-        const total = document.querySelector('.cms__total-price');
-        total.textContent = `$ ${tableTotalPrice(goods)}`;
-        row.remove();
+        const goodId = goods[rowIndex].id;
+        const showModal = await deleteModal(goodId);
+        if (showModal) {
+          await calback({ id: goodId, requestMethod: 'DELETE' });
+          goods.splice(rowIndex, 1);
+          totalPriceElem();
+          row.remove();
+        }
       }
     });
   });
@@ -105,12 +128,53 @@ const openPic = () => {
       const url = target.getAttribute('data-pic');
       const screenY = (screen.height / 2) / 2;
       const screenX = (screen.width / 2) / 2;
-      open(url, 'about:blank',
+      open(`http://localhost:3000/${url}`, 'about:blank',
         `width=800,height=600,top=${screenY},left=${screenX}`);
     });
   });
-}
+};
 
+const editGods = (modal, calback) => {
+  const editBtn = document.querySelectorAll('.table__btn_edit');
+  const idGood = document.querySelector('.vendor-code__id');
+  const img = document.querySelector('.image-container');
+  editBtn.forEach((button) => {
+    button.addEventListener('click', async e => {
+      const formModal = modal.children[0].children[2];
+      const target = e.target;
+      const tr = target.closest('tr');
+      const goodId = tr.children[1].getAttribute('dataid');
+      const good = await calback({ id: goodId });
+      idGood.textContent = goodId;
+      formModal.title.value = good.title;
+      formModal.category.value = good.category;
+      formModal.description.value = good.description;
+      formModal.units.value = good.units;
+      formModal.count.value = good.count;
+      formModal.price.value = good.price;
+      img.style.display = 'block';
+      img.src = `http://localhost:3000/${good.image}`;
+      formModal.total.value = `$${good.count * good.price}`;
+      modal.classList.add('active');
+      formModal.addEventListener('submit', async e => {
+        e.preventDefault();
+        const newGood = {
+          title: formModal.title.value,
+          category: formModal.category.value,
+          description: formModal.description.value,
+          units: formModal.units.value,
+          count: formModal.count.value,
+          price: formModal.price.value,
+        };
+        await calback({
+          id: goodId,
+          requestMethod: 'PATCH',
+          requestBody: newGood,
+        });
+      });
+    });
+  });
+};
 
 export default {
   controlModal,
@@ -118,4 +182,5 @@ export default {
   submitForm,
   deleteGood,
   openPic,
+  editGods,
 };

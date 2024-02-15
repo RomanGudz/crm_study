@@ -1,8 +1,13 @@
 import math from './math.js';
+import data from './data.js';
 const {
   randomNumber,
-  tableTotalPrice,
 } = math;
+
+const {
+  totalPriceGoods,
+  getCategory,
+} = data;
 
 const createContainer = () => {
   const container = document.createElement('div');
@@ -20,18 +25,21 @@ const createTitle = () => {
   title.textContent = 'CMS - ShopOnline';
   return title;
 };
-const totalPriceElem = (goods) => {
+const totalPriceElem = () => {
   const total = document.createElement('p');
   total.classList.add('cms__total');
   total.textContent = 'Итоговая стоимость: ';
   const span = document.createElement('span');
   span.classList.add('cms__total-price');
-  span.textContent = `$ ${tableTotalPrice(goods)}`;
+  const totalPrice = totalPriceGoods();
+  totalPrice.then((data) => {
+    span.textContent = `$ ${data}`;
+  });
   total.append(span);
   return total;
 };
 const createInput = params => {
-  const { className, type, id, name, placeholder, required } = params;
+  const { className, type, id, name, placeholder, required, list } = params;
   const input = document.createElement('input');
   input.classList.add(className);
   const attributes = {
@@ -40,6 +48,7 @@ const createInput = params => {
     ...(name && { name }),
     ...(placeholder && { placeholder }),
     ...(required && { required }),
+    ...(list && { list }),
   };
   for (const [key, value] of Object.entries(attributes)) {
     input.setAttribute(key, value);
@@ -149,11 +158,11 @@ const createRow = (item, index) => {
   tdSerialNumber.textContent = `${index + 1}`;
   const tdID = document.createElement('td');
   tdID.classList.add('table__cell', 'table__cell_left', 'table__cell_name');
-  tdID.setAttribute('dataId', randomNumber());
+  tdID.setAttribute('dataId', item.id);
   tdID.textContent = item.title;
   const spanGood = document.createElement('span');
   spanGood.classList.add('table__cell-id');
-  spanGood.textContent = `id: ${randomNumber()}`;
+  spanGood.textContent = `id: ${item.id}`;
   tdID.prepend(spanGood);
   const tdTitle = document.createElement('td');
   tdTitle.classList.add('table__cell', 'table__cell_left');
@@ -177,7 +186,7 @@ const createRow = (item, index) => {
     classTable: 'table__btn',
     classButton: elem,
   }));
-  buttons[0].setAttribute('data-pic', item.images.small);
+  buttons[0].setAttribute('data-pic', item.image);
 
   tdBtnWrapper.append(...buttons);
   tr.append(
@@ -213,6 +222,21 @@ const createSubPanel = () => {
   );
   return subPanel;
 };
+
+const optionsSelect = async () => {
+  const selectCategory = document.createElement('datalist');
+  selectCategory.setAttribute('id', 'category-list');
+  const data = await getCategory();
+  const options = data.map((item) => {
+    const createOption = document.createElement('option');
+    createOption.value = item;
+    return createOption;
+  });
+  selectCategory.append(...options);
+  return new Promise((resolve) => {
+    resolve(selectCategory);
+  });
+};
 const createFildset = () => {
   const fildset = document.createElement('fieldset');
   fildset.classList.add('modal__fieldset');
@@ -225,8 +249,8 @@ const createFildset = () => {
   labelName.append(createInput({
     className: 'modal__input',
     type: 'text',
-    name: 'name',
-    id: 'name',
+    name: 'title',
+    id: 'title',
     required: 'required',
   }));
   const labelCategory = createLabel({
@@ -235,13 +259,18 @@ const createFildset = () => {
     classNameSpan: 'modal__text',
     spanText: 'Категория',
   });
-  labelCategory.append(createInput({
+  const inputCategory = createInput({
     className: 'modal__input',
     type: 'text',
     name: 'category',
     id: 'category',
     required: 'required',
-  }));
+    list: 'category-list',
+  });
+  optionsSelect().then((result) => {
+    labelCategory.append(result);
+  });
+  labelCategory.append(inputCategory);
   const labelDescription = createLabel({
     className: ['modal__label', 'modal__label_description'],
     atributeFor: 'description',
@@ -353,8 +382,8 @@ const labelDiscount = () => {
 const formGood = () => {
   const form = document.createElement('form');
   form.classList.add('modal__form');
-  form.method = 'post';
-  form.action = 'https://jsonplaceholder.typicode.com/posts';
+  // form.method = 'post';
+  // form.action = 'https://jsonplaceholder.typicode.com/posts';
   const modalFooter = document.createElement('div');
   modalFooter.classList.add('modal__footer');
   const labelFooter = document.createElement('lable');
@@ -411,6 +440,79 @@ const errorAddImg = () => {
   return p;
 };
 
+const deleteModal = (id) => {
+  const overlay = document.createElement('div');
+  overlay.classList.add('overlay', 'active');
+  const modal = document.createElement('div');
+  modal.classList.add('overlay__modal', 'modal');
+  const buttonExit = createButton({
+    classButton: 'modal__close',
+  });
+  buttonExit.innerHTML = `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="m2 2 20 20M2 22 22 2" 
+          stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+        </svg>`;
+
+  const modalTop = document.createElement('div');
+  modalTop.classList.add('modal_top');
+  modalTop.innerHTML = `<h4 class="modal__title-delete">
+  Вы уверены что хотите удалить товар с id: ${id} ?</h4>`;
+
+  const btnDelete = createButton({
+    classButton: 'modal__delete',
+    text: 'Удалить товар',
+  });
+  const buttonClose = createButton({
+    classButton: 'modal__close-btn',
+    text: 'Закрыть',
+  });
+  modal.append(buttonExit, modalTop, btnDelete, buttonClose);
+  overlay.append(modal);
+  document.body.append(overlay);
+  return new Promise((resolve) => {
+    btnDelete.addEventListener('click', () => {
+      resolve(true);
+    });
+    buttonClose.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      resolve(false);
+    });
+    buttonExit.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      resolve(false);
+    });
+  });
+};
+
+const modalError = () => {
+  const overlay = document.createElement('div');
+  overlay.classList.add('overlay', 'active');
+  const modal = document.createElement('div');
+  modal.classList.add('overlay__modal', 'modal');
+  const buttonExit = createButton({
+    classButton: 'modal__close',
+  });
+  buttonExit.innerHTML = `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="m2 2 20 20M2 22 22 2" 
+          stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+        </svg>`;
+
+  const modalTop = document.createElement('div');
+  modalTop.classList.add('modal_top');
+  modalTop.innerHTML = `<h4 class="modal__title-delete">
+  Что-то пошло не так попробуйте еще раз...</h4>`;
+
+  modal.append(buttonExit, modalTop);
+  overlay.append(modal);
+  document.body.append(overlay);
+  return new Promise((resolve) => {
+    buttonExit.addEventListener('click', () => {
+      overlay.classList.remove('active');
+      resolve(false);
+    });
+  });
+};
+
 export default {
   createContainer,
   createHeader,
@@ -422,4 +524,6 @@ export default {
   createSubPanel,
   modalForm,
   createRow,
+  deleteModal,
+  modalError,
 };

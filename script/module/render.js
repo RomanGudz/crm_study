@@ -15,7 +15,7 @@ export const renderCMS = (app, goods) => {
   const container = createContainer();
   const header = createHeader();
   const title = createTitle();
-  const total = totalPriceElem(goods);
+  const total = totalPriceElem();
   const divGoods = createDivGoods();
   const row = renderGoods(goods);
   const subPanel = createSubPanel();
