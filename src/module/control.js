@@ -44,11 +44,8 @@ const activeDiscount = () => {
     }
   });
 };
-// const addNewGoodPage = (goods, newGood, tableBody) => {
-//   tableBody.append(createRow(newGood, (goods.length - 1)));
-//   totalPriceElem();
-// };
-const submitForm = (modal, tbody, goods, loadGods) => {
+
+const submitForm = (modal, loadGods, id = undefined) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
 
@@ -80,7 +77,8 @@ const submitForm = (modal, tbody, goods, loadGods) => {
     const newGood = Object.fromEntries(formData);
     const imgTobase64 = await toBase64(newGood.image);
     newGood.image = imgTobase64;
-    const { data, response } = await loadGods({
+
+    const { response } = await loadGods({
       requestMethod: 'POST', requestBody: newGood,
     },
       (err) => {
@@ -91,7 +89,7 @@ const submitForm = (modal, tbody, goods, loadGods) => {
       },
     );
     if (response.ok) {
-      console.log(data.goods);
+      const { data } = await loadGods({});
       renderGoods(data.goods);
       form.reset();
       document.querySelector('.overlay').classList.remove('active');
@@ -138,11 +136,13 @@ const editGods = (modal, calback) => {
   const editBtn = document.querySelectorAll('.table__btn_edit');
   const idGood = document.querySelector('.vendor-code__id');
   const img = document.querySelector('.image-container');
+  const discountCheckbox = document.getElementById('discount');
   editBtn.forEach((button) => {
     button.addEventListener('click', async e => {
       const formModal = modal.children[0].children[2];
       const target = e.target;
       const tr = target.closest('tr');
+      console.log('tr: ', tr);
       const goodId = tr.children[1].getAttribute('dataid');
       const good = await calback({ id: goodId });
       idGood.textContent = goodId;
@@ -158,19 +158,22 @@ const editGods = (modal, calback) => {
       modal.classList.add('active');
       formModal.addEventListener('submit', async e => {
         e.preventDefault();
-        const newGood = {
-          title: formModal.title.value,
-          category: formModal.category.value,
-          description: formModal.description.value,
-          units: formModal.units.value,
-          count: formModal.count.value,
-          price: formModal.price.value,
-        };
+        const target = e.target;
+        const formData = new FormData(target);
+        formData.set('discount', discountCheckbox.checked);
+        const newGood = Object.fromEntries(formData);
+        const imgTobase64 = await toBase64(newGood.image);
+        newGood.id = goodId;
+        newGood.image = imgTobase64;
         await calback({
           id: goodId,
           requestMethod: 'PATCH',
           requestBody: newGood,
         });
+        const { data } = await calback({});
+        renderGoods(data.goods);
+        formModal.reset();
+        document.querySelector('.overlay').classList.remove('active');
       });
     });
   });

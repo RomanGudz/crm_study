@@ -1,6 +1,6 @@
-import createElements from "./createElements.js";
+import createElements from './createElements.js';
 const {
-  renderGoods
+  renderGoods,
 } = createElements;
 
 const search = (options) => {
@@ -17,7 +17,7 @@ const search = (options) => {
     const target = e.target;
     const requestText = target.value;
     const sendRequest = async () => {
-      const data = await loadGods({ search: requestText });
+      const { data } = await loadGods({ search: requestText });
       tbody.innerHTML = '';
       tbody.append(...renderGoods(data.goods));
     };

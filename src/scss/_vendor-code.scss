@@ -1,0 +1,23 @@
+.vendor-code {
+	display: flex;
+	align-items: center;
+	&__wrapper {
+		font-weight: 600;
+		font-size: 10px;
+		line-height: 12px;
+		text-transform: uppercase;
+		color: #C5C5C5;
+		margin-right: 10px;
+	}
+	&__btn {
+		background-color: transparent;
+		border: transparent;
+		color: #6E6893;
+		&:hover {
+			opacity: .6;
+		}
+		&:active {
+			opacity: .9;
+		}
+	}
+}

@@ -1,0 +1,348 @@
+.modal {
+  background: #f2f0f9;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.25);
+  position: relative;
+  padding: 32px 106px 39px;
+  max-width: 792px;
+  &_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 43px;
+  }
+  &__title {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    &-delete {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 29px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+  }
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background-color: transparent;
+    border: none;
+    color: #6e6893;
+    &:hover {
+      opacity: 0.6;
+    }
+    &:active {
+      opacity: 0.9;
+    }
+    &-btn {
+      font-weight: 600;
+      padding: 10px 25px;
+      font-size: 16px;
+      border: none;
+      line-height: 19px;
+      text-transform: uppercase;
+      background: #00ff00;
+      border-radius: 6px;
+      color: #ffffff;
+    }
+  }
+  &__form {
+    position: relative;
+    &:before {
+      content: "";
+      position: absolute;
+      display: block;
+      background: #c6c2de;
+      height: 1px;
+      width: 100%;
+      top: -21px;
+    }
+  }
+  &__fieldset {
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "name description"
+      "category description"
+      "units count"
+      "discount price"
+      ". file"
+      "file-add file-add";
+    gap: 12px 24px;
+    background: #ffffff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 28px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 580px;
+  }
+  &__label {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 15px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6e6893;
+    &_name {
+      grid-area: name;
+    }
+    &_category {
+      grid-area: category;
+    }
+    &_description {
+      grid-area: description;
+    }
+    &_units {
+      grid-area: units;
+    }
+    &_discount {
+      grid-area: discount;
+      width: 100%;
+      display: block;
+    }
+    &_count {
+      grid-area: count;
+    }
+    &_price {
+      grid-area: price;
+    }
+    &_file {
+      grid-area: file;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 17px;
+      text-transform: uppercase;
+      background: #6d5bd0;
+      border-radius: 6px;
+      width: 250px;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      cursor: pointer;
+      &:hover {
+        background-color: #6e6893;
+      }
+      &:focus {
+        background-color: #6e6893;
+      }
+      &-add {
+        grid-area: file-add;
+        justify-self: center;
+        height: 200px;
+        width: 200px;
+        background-size: cover;
+        background-position: center;
+        font-size: 0;
+      }
+    }
+  }
+  &__text {
+    display: block;
+    margin-bottom: 5px;
+    padding-left: 10px;
+  }
+  &__input {
+    display: block;
+    width: 100%;
+    height: 40px;
+    background-color: #f4f2ff;
+    border-radius: 6px;
+    border: none;
+    padding: 5px;
+    &:focus {
+      outline: 2px solid #6e6893;
+    }
+    &_textarea {
+      min-height: 111px;
+      resize: none;
+    }
+  }
+  &__checkbox {
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    &:before {
+      content: "";
+      top: 0;
+      left: 0;
+      display: block;
+      width: 40px;
+      height: 40px;
+      background-color: #f4f2ff;
+      border-radius: 6px;
+    }
+    &:after {
+      content: "";
+      position: absolute;
+      top: 12px;
+      left: 10px;
+      width: 20px;
+      height: 10px;
+      border: 3px solid black;
+      border-top: none;
+      border-right: none;
+      opacity: 0;
+      transform: rotate(-45deg);
+    }
+    &:checked:after {
+      opacity: 1;
+    }
+    &:focus:before,
+    &:hover:not(:disabled):before {
+      box-shadow: 0px 0px 10px rgba(0, 113, 227, 0.5);
+    }
+    &:disabled:before {
+      background-color: #cccccc;
+    }
+    &-wrapper {
+      display: flex;
+    }
+  }
+  &__checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+    cursor: pointer;
+  }
+  &__total {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #6e6893;
+    &-price {
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 22px;
+      color: #6d5bd0;
+    }
+  }
+  &__submit {
+    font-weight: 600;
+    padding: 10px 25px;
+    font-size: 16px;
+    border: none;
+    line-height: 19px;
+    text-transform: uppercase;
+    background: #6d5bd0;
+    border-radius: 6px;
+    color: #ffffff;
+    &:hover {
+      background-color: #6e6893;
+    }
+    &:focus {
+      background-color: #6e6893;
+    }
+  }
+  &__delete {
+    font-weight: 600;
+    padding: 10px 25px;
+    font-size: 16px;
+    border: none;
+    line-height: 19px;
+    text-transform: uppercase;
+    background: #ff0000;
+    border-radius: 6px;
+    color: #ffffff;
+    margin-right: 10px;
+  }
+  &__footer {
+    max-width: 523px;
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+  }
+  &_top {
+    flex-direction: column;
+  }
+  &__footer {
+    flex-direction: column;
+  }
+  &__total {
+    align-self: flex-end;
+    margin-bottom: 20px;
+  }
+}
+.image-container {
+  grid-area: file-add;
+  position: relative;
+  display: none;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+.image-container:hover:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  transform: translateX(-50%);
+  transform: rotate(45deg);
+  width: 35px;
+  height: 1px;
+  border: 1px solid black;
+}
+.image-container:hover:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  transform: rotate(135deg);
+  width: 35px;
+  height: 1px;
+  border: 1px solid black;
+}
+
+.err-add-image {
+  display: none;
+  font-size: 18px;
+  color: red;
+}
+@media (max-width: 1000px) {
+  .modal__fieldset {
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "name"
+      "category"
+      "description"
+      "units"
+      "count"
+      "discount"
+      "price"
+      "file"
+      "file-add";
+    gap: 12px 24px;
+    background: #ffffff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 28px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 580px;
+  }
+
+  .modal_top {
+    flex-direction: column;
+  }
+
+  .modal__footer {
+    flex-direction: column;
+  }
+
+  .modal__total {
+    align-self: flex-end;
+    margin-bottom: 20px;
+  }
+}

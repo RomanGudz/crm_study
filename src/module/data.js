@@ -7,7 +7,7 @@ const loadGods = async ({
   search = undefined,
 
 }, callback) => {
-  let URL = 'http://localhost:3000/api/goods';
+  let URL = 'http://localhost:3000/api/goods?page=2';
   try {
     if (id) {
       URL = `http://localhost:3000/api/goods/${id}`;
@@ -15,9 +15,6 @@ const loadGods = async ({
     if (search) {
       URL = `http://localhost:3000/api/goods?page=1&search=${search}`;
     }
-    // if (requestBody) {
-    //   URL = 'http://localhost:3000/api/good';
-    // }
     const response = await fetch(`${URL}`, {
       method: requestMethod,
       headers: {

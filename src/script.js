@@ -3,6 +3,9 @@ import data from './module/data.js';
 import control from './module/control.js';
 import searchGoods from './module/searchGoods.js';
 
+import './index.html';
+import './scss/index.scss';
+
 const {
   controlModal,
   activeDiscount,
@@ -29,7 +32,7 @@ const {
     controlModal(modal);
     activeDiscount(modal);
     deleteGood(data.goods, loadGods);
-    submitForm(modal, tbody, data.goods, loadGods);
+    submitForm(modal, loadGods);
     openPic();
     editGods(modal, loadGods);
     search({ container, loadGods, tbody });

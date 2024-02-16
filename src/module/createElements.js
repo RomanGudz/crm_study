@@ -471,6 +471,7 @@ const deleteModal = (id) => {
   document.body.append(overlay);
   return new Promise((resolve) => {
     btnDelete.addEventListener('click', () => {
+      overlay.classList.remove('active');
       resolve(true);
     });
     buttonClose.addEventListener('click', () => {
