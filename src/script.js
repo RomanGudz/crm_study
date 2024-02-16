@@ -32,7 +32,7 @@ const {
     controlModal(modal);
     activeDiscount(modal);
     deleteGood(data.goods, loadGods);
-    submitForm(modal, loadGods);
+    submitForm(modal, loadGods, tbody);
     openPic();
     editGods(modal, loadGods);
     search({ container, loadGods, tbody });

@@ -6,6 +6,7 @@ const {
   deleteModal,
   totalPriceElem,
   modalError,
+  createRow,
 } = createElements;
 
 const {
@@ -32,6 +33,11 @@ const controlModal = (modal) => {
   });
 };
 
+const addNewGoodPage = (goods, newGood, tableBody) => {
+  tableBody.append(createRow(newGood, (goods.length - 1)));
+  totalPriceElem();
+};
+
 const activeDiscount = () => {
   const modalDiscount = document.querySelector('#discount');
   const modalDiscountInput = document.querySelector('.modal__input_discount');
@@ -45,7 +51,7 @@ const activeDiscount = () => {
   });
 };
 
-const submitForm = (modal, loadGods, id = undefined) => {
+const submitForm = (modal, loadGods, tableBody) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
 
@@ -90,7 +96,7 @@ const submitForm = (modal, loadGods, id = undefined) => {
     );
     if (response.ok) {
       const { data } = await loadGods({});
-      renderGoods(data.goods);
+      addNewGoodPage(data.goods, newGood, tableBody);
       form.reset();
       document.querySelector('.overlay').classList.remove('active');
     }
