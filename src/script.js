@@ -35,7 +35,7 @@ const {
     submitForm(modal, loadGods, tbody);
     openPic();
     editGods(modal, loadGods);
-    search({ container, loadGods, tbody });
+    search({ container, loadGods, tbody, modal });
   };
   window.cmsInit = initApp;
 }
