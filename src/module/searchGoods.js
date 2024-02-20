@@ -26,11 +26,9 @@ const search = (options) => {
     const requestText = target.value;
     const sendRequest = async () => {
       const { data } = await loadGods({ search: requestText });
-      console.log('data: ', data);
       const row = data.goods.map((item, index) => {
         return createRow(item, index);
       });
-      console.log(row);
       tbody.innerHTML = '';
       tbody.append(...row);
       openPic();

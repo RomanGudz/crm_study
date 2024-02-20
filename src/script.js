@@ -9,7 +9,6 @@ import './scss/index.scss';
 const {
   controlModal,
   activeDiscount,
-  submitForm,
   deleteGood,
   openPic,
   editGods,
@@ -31,10 +30,9 @@ const {
     const { tbody, modal, container } = cmsShop;
     controlModal(modal);
     activeDiscount(modal);
-    deleteGood(data.goods, loadGods);
-    submitForm(modal, loadGods, tbody);
+    deleteGood(data.goods);
     openPic();
-    editGods(modal, loadGods);
+    editGods();
     search({ container, loadGods, tbody, modal });
   };
   window.cmsInit = initApp;

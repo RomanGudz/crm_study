@@ -1,37 +1,23 @@
 import createElements from './createElements.js';
 import data from './data.js';
+import math from './math.js';
 
 const {
-  renderGoods,
   deleteModal,
   totalPriceElem,
   modalError,
   createRow,
+  renderGoods,
 } = createElements;
 
 const {
   toBase64,
+  loadGods,
 } = data;
 
-
-const controlModal = (modal) => {
-  const openModal = () => {
-    modal.classList.add('active');
-  };
-  const closeModal = () => {
-    modal.classList.remove('active');
-  };
-
-  const openBtn = document.querySelector('.panel__add-goods');
-  openBtn.addEventListener('click', openModal);
-
-  modal.addEventListener('click', e => {
-    const target = e.target;
-    if (target === modal || target.closest('.modal__close')) {
-      closeModal();
-    }
-  });
-};
+const {
+  randomNumber,
+} = math;
 
 const addNewGoodPage = (goods, newGood, tableBody) => {
   tableBody.append(createRow(newGood, (goods.length - 1)));
@@ -51,10 +37,10 @@ const activeDiscount = () => {
   });
 };
 
-const submitForm = (modal, loadGods, tableBody) => {
+const submitForm = (goodId = undefined) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
-
+  const tableBody = document.querySelector('.table__body');
   const errImg = document.querySelector('.err-add-image');
   form.price.addEventListener('change', e => {
     form.total.value = `$ ${e.target.value * form.count.value}`;
@@ -75,7 +61,9 @@ const submitForm = (modal, loadGods, tableBody) => {
       img.style.display = 'block';
     }
   });
-  modal.addEventListener('submit', async e => {
+  const id = document.querySelector('.vendor-code__id');
+
+  form.addEventListener('submit', async e => {
     const target = e.target;
     e.preventDefault();
     const formData = new FormData(target);
@@ -83,27 +71,39 @@ const submitForm = (modal, loadGods, tableBody) => {
     const newGood = Object.fromEntries(formData);
     const imgTobase64 = await toBase64(newGood.image);
     newGood.image = imgTobase64;
-
-    const { response } = await loadGods({
-      requestMethod: 'POST', requestBody: newGood,
-    },
-      (err) => {
-        if (err) {
-          console.log('err: ', err);
-          modalError();
-        }
-      },
-    );
-    if (response.ok) {
+    newGood.id = id.textContent;
+    if (goodId) {
+      console.log('goodId: ', goodId);
+      await loadGods({
+        id: goodId,
+        requestMethod: 'PATCH',
+        requestBody: newGood,
+      });
       const { data } = await loadGods({});
-      addNewGoodPage(data.goods, newGood, tableBody);
-      form.reset();
-      document.querySelector('.overlay').classList.remove('active');
+      renderGoods(data.goods);
+    } else {
+      console.log('goodId2: ', goodId);
+      const { response } = await loadGods({
+        requestMethod: 'POST', requestBody: newGood,
+      },
+        (err) => {
+          if (err) {
+            console.log('err: ', err);
+            modalError();
+          }
+        },
+      );
+      if (response.ok) {
+        const { data } = await loadGods({});
+        addNewGoodPage(data.goods, newGood, tableBody);
+      }
     }
+    form.reset();
+    document.querySelector('.overlay').classList.remove('active');
   });
 };
 
-const deleteGood = (goods, calback) => {
+const deleteGood = (goods) => {
   const btnDelete = document.querySelectorAll('.table__btn_del');
   btnDelete.forEach(del => {
     del.addEventListener('click', async e => {
@@ -114,7 +114,7 @@ const deleteGood = (goods, calback) => {
         const goodId = goods[rowIndex].id;
         const showModal = await deleteModal(goodId);
         if (showModal) {
-          await calback({ id: goodId, requestMethod: 'DELETE' });
+          await loadGods({ id: goodId, requestMethod: 'DELETE' });
           goods.splice(rowIndex, 1);
           totalPriceElem();
           row.remove();
@@ -138,19 +138,19 @@ const openPic = () => {
   });
 };
 
-const editGods = (modal, calback) => {
+const editGods = () => {
   const editBtn = document.querySelectorAll('.table__btn_edit');
   const idGood = document.querySelector('.vendor-code__id');
+  const formModal = document.querySelector('.modal__form');
+  const modal = document.querySelector('.overlay');
   const img = document.querySelector('.image-container');
-  const discountCheckbox = document.getElementById('discount');
   editBtn.forEach((button) => {
     button.addEventListener('click', async e => {
-      const formModal = modal.children[0].children[2];
       const target = e.target;
       const tr = target.closest('tr');
       console.log('tr: ', tr);
       const goodId = tr.children[1].getAttribute('dataid');
-      const good = await calback({ id: goodId });
+      const good = await loadGods({ id: goodId });
       idGood.textContent = goodId;
       formModal.title.value = good.title;
       formModal.category.value = good.category;
@@ -162,26 +162,34 @@ const editGods = (modal, calback) => {
       img.src = `http://localhost:3000/${good.image}`;
       formModal.total.value = `$${good.count * good.price}`;
       modal.classList.add('active');
-      formModal.addEventListener('submit', async e => {
-        e.preventDefault();
-        const target = e.target;
-        const formData = new FormData(target);
-        formData.set('discount', discountCheckbox.checked);
-        const newGood = Object.fromEntries(formData);
-        const imgTobase64 = await toBase64(newGood.image);
-        newGood.id = goodId;
-        newGood.image = imgTobase64;
-        await calback({
-          id: goodId,
-          requestMethod: 'PATCH',
-          requestBody: newGood,
-        });
-        const { data } = await calback({});
-        renderGoods(data.goods);
-        formModal.reset();
-        document.querySelector('.overlay').classList.remove('active');
-      });
+      submitForm(goodId);
     });
+  });
+};
+
+const controlModal = (modal) => {
+  const form = modal.querySelector('.modal__form');
+  const id = modal.querySelector('.vendor-code__id');
+  const img = modal.querySelector('.image-container');
+  const openModal = () => {
+    form.reset();
+    img.style.display = 'none';
+    id.textContent = randomNumber();
+    submitForm();
+    modal.classList.add('active');
+  };
+  const closeModal = () => {
+    modal.classList.remove('active');
+  };
+
+  const openBtn = document.querySelector('.panel__add-goods');
+  openBtn.addEventListener('click', openModal);
+
+  modal.addEventListener('click', e => {
+    const target = e.target;
+    if (target === modal || target.closest('.modal__close')) {
+      closeModal();
+    }
   });
 };
 
