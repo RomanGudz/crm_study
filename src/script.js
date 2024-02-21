@@ -33,7 +33,7 @@ const {
     deleteGood(data.goods);
     openPic();
     editGods();
-    search({ container, loadGods, tbody, modal });
+    search({ container, loadGods, tbody });
   };
   window.cmsInit = initApp;
 }

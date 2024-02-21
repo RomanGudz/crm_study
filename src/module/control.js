@@ -7,7 +7,6 @@ const {
   totalPriceElem,
   modalError,
   createRow,
-  renderGoods,
 } = createElements;
 
 const {
@@ -24,6 +23,7 @@ const addNewGoodPage = (goods, newGood, tableBody) => {
   totalPriceElem();
 };
 
+
 const activeDiscount = () => {
   const modalDiscount = document.querySelector('#discount');
   const modalDiscountInput = document.querySelector('.modal__input_discount');
@@ -37,11 +37,15 @@ const activeDiscount = () => {
   });
 };
 
-const submitForm = (goodId = undefined) => {
+
+
+const submitForm = async (good = undefined) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
   const tableBody = document.querySelector('.table__body');
   const errImg = document.querySelector('.err-add-image');
+  const img = document.querySelector('.image-container');
+  const id = document.querySelector('.vendor-code__id');
   form.price.addEventListener('change', e => {
     form.total.value = `$ ${e.target.value * form.count.value}`;
   });
@@ -49,9 +53,9 @@ const submitForm = (goodId = undefined) => {
   form.count.addEventListener('change', e => {
     form.total.value = `$ ${e.target.value * form.price.value}`;
   });
+
   form.image.addEventListener('change', () => {
     const image = form.image.files[0];
-    const img = document.querySelector('.image-container');
     if (image.size > 1000000) {
       errImg.style.display = 'block';
       img.style.display = 'none';
@@ -61,28 +65,29 @@ const submitForm = (goodId = undefined) => {
       img.style.display = 'block';
     }
   });
-  const id = document.querySelector('.vendor-code__id');
-
   form.addEventListener('submit', async e => {
     const target = e.target;
     e.preventDefault();
     const formData = new FormData(target);
     formData.set('discount', discountCheckbox.checked);
     const newGood = Object.fromEntries(formData);
-    const imgTobase64 = await toBase64(newGood.image);
-    newGood.image = imgTobase64;
     newGood.id = id.textContent;
-    if (goodId) {
-      console.log('goodId: ', goodId);
+    if (form.image.files.length > 0) {
+      const imgTobase64 = await toBase64(newGood.image);
+      newGood.image = imgTobase64;
+    } else {
+      newGood.image = good.image;
+    }
+    if (good.id) {
       await loadGods({
-        id: goodId,
+        id: good.id,
         requestMethod: 'PATCH',
         requestBody: newGood,
       });
       const { data } = await loadGods({});
-      renderGoods(data.goods);
+      console.log('data: ', data);
+      upDateRow(data.goods, tableBody);
     } else {
-      console.log('goodId2: ', goodId);
       const { response } = await loadGods({
         requestMethod: 'POST', requestBody: newGood,
       },
@@ -144,11 +149,11 @@ const editGods = () => {
   const formModal = document.querySelector('.modal__form');
   const modal = document.querySelector('.overlay');
   const img = document.querySelector('.image-container');
+  const btnSubmit = document.querySelector('.modal__submit');
   editBtn.forEach((button) => {
     button.addEventListener('click', async e => {
       const target = e.target;
       const tr = target.closest('tr');
-      console.log('tr: ', tr);
       const goodId = tr.children[1].getAttribute('dataid');
       const good = await loadGods({ id: goodId });
       idGood.textContent = goodId;
@@ -162,7 +167,7 @@ const editGods = () => {
       img.src = `http://localhost:3000/${good.image}`;
       formModal.total.value = `$${good.count * good.price}`;
       modal.classList.add('active');
-      submitForm(goodId);
+      submitForm(good);
     });
   });
 };
@@ -193,6 +198,15 @@ const controlModal = (modal) => {
   });
 };
 
+const upDateRow = (goods, tbody) => {
+  const row = goods.map((item, index) => createRow(item, index));
+  tbody.innerHTML = '';
+  tbody.append(...row);
+  openPic();
+  deleteGood(goods);
+  editGods();
+};
+
 export default {
   controlModal,
   activeDiscount,
@@ -200,4 +214,5 @@ export default {
   deleteGood,
   openPic,
   editGods,
+  upDateRow,
 };

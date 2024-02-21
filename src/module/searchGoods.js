@@ -1,13 +1,7 @@
-import createElements from './createElements.js';
 import control from './control.js';
-const {
-  createRow,
-} = createElements;
 
 const {
-  openPic,
-  deleteGood,
-  editGods
+  upDateRow
 } = control;
 
 const search = (options) => {
@@ -15,7 +9,6 @@ const search = (options) => {
     container,
     loadGods,
     tbody,
-    modal,
   } = options;
 
   const input = container.querySelector('.panel__search');
@@ -26,18 +19,12 @@ const search = (options) => {
     const requestText = target.value;
     const sendRequest = async () => {
       const { data } = await loadGods({ search: requestText });
-      const row = data.goods.map((item, index) => {
-        return createRow(item, index);
-      });
-      tbody.innerHTML = '';
-      tbody.append(...row);
-      openPic();
-      deleteGood(data.goods, loadGods);
-      editGods(modal, loadGods);
+      upDateRow(data.goods, tbody)
     };
     clearTimeout(timer);
     timer = setTimeout(sendRequest, 300);
   });
 };
+
 
 export default { search };
