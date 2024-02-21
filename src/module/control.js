@@ -75,10 +75,11 @@ const submitForm = async (good = undefined) => {
     if (form.image.files.length > 0) {
       const imgTobase64 = await toBase64(newGood.image);
       newGood.image = imgTobase64;
-    } else {
+    }
+    if (good) {
       newGood.image = good.image;
     }
-    if (good.id) {
+    if (good) {
       await loadGods({
         id: good.id,
         requestMethod: 'PATCH',
