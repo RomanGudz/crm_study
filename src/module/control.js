@@ -36,10 +36,54 @@ const activeDiscount = () => {
     }
   });
 };
+const submit = async (options) => {
+  const {
+    e, good, discountCheckbox, tableBody, id, form
+  } = options
+  const target = e.target;
+  e.preventDefault();
+  const formData = new FormData(target);
+  formData.set('discount', discountCheckbox.checked);
+  const newGood = Object.fromEntries(formData);
+  newGood.id = id.textContent;
+  if (form.image.files.length > 0) {
+    const imgTobase64 = await toBase64(newGood.image);
+    newGood.image = imgTobase64;
+  }
+  if (good) {
+    newGood.image = good.image;
+  }
+  if (good) {
+    await loadGods({
+      id: good.id,
+      requestMethod: 'PATCH',
+      requestBody: newGood,
+    });
+    const { data } = await loadGods({});
+    console.log('data: ', data);
+    upDateRow(data.goods, tableBody);
+  } else {
+    const { response } = await loadGods({
+      requestMethod: 'POST', requestBody: newGood,
+    },
+      (err) => {
+        if (err) {
+          console.log('err: ', err);
+          modalError();
+        }
+      },
+    );
+    if (response.ok) {
+      const { data } = await loadGods({});
+      addNewGoodPage(data.goods, newGood, tableBody);
+    }
+  }
+  form.reset();
+  document.querySelector('.overlay').classList.remove('active');
+};
 
 
-
-const submitForm = async (good = undefined) => {
+const submitForm = (good = undefined) => {
   const discountCheckbox = document.getElementById('discount');
   const form = document.querySelector('.modal__form');
   const tableBody = document.querySelector('.table__body');
@@ -65,47 +109,12 @@ const submitForm = async (good = undefined) => {
       img.style.display = 'block';
     }
   });
-  form.addEventListener('submit', async e => {
-    const target = e.target;
-    e.preventDefault();
-    const formData = new FormData(target);
-    formData.set('discount', discountCheckbox.checked);
-    const newGood = Object.fromEntries(formData);
-    newGood.id = id.textContent;
-    if (form.image.files.length > 0) {
-      const imgTobase64 = await toBase64(newGood.image);
-      newGood.image = imgTobase64;
-    }
-    if (good) {
-      newGood.image = good.image;
-    }
-    if (good) {
-      await loadGods({
-        id: good.id,
-        requestMethod: 'PATCH',
-        requestBody: newGood,
-      });
-      const { data } = await loadGods({});
-      console.log('data: ', data);
-      upDateRow(data.goods, tableBody);
-    } else {
-      const { response } = await loadGods({
-        requestMethod: 'POST', requestBody: newGood,
-      },
-        (err) => {
-          if (err) {
-            console.log('err: ', err);
-            modalError();
-          }
-        },
-      );
-      if (response.ok) {
-        const { data } = await loadGods({});
-        addNewGoodPage(data.goods, newGood, tableBody);
-      }
-    }
-    form.reset();
-    document.querySelector('.overlay').classList.remove('active');
+  form.removeEventListener('submit', (e) => {
+    submit({ e, good, discountCheckbox, tableBody, id, form });
+  });
+  form.addEventListener('submit', (e) => {
+    submit({ e, good, discountCheckbox, tableBody, id, form });
+    console.log('submitHandler: ', submit);
   });
 };
 
