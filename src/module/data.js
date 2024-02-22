@@ -7,7 +7,7 @@ const loadGods = async ({
   search = undefined,
 
 }, callback) => {
-  let URL = 'http://localhost:3000/api/goods?page=2';
+  let URL = 'http://localhost:3000/api/goods';
   try {
     if (id) {
       URL = `http://localhost:3000/api/goods/${id}`;
