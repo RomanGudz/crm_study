@@ -7,6 +7,7 @@ const {
   totalPriceElem,
   modalError,
   createRow,
+  regExpNotImg,
 } = createElements;
 
 const {
@@ -18,10 +19,7 @@ const {
   randomNumber,
 } = math;
 
-const addNewGoodPage = (goods, newGood, tableBody) => {
-  tableBody.append(createRow(newGood, (goods.length - 1)));
-  totalPriceElem();
-};
+
 
 
 const activeDiscount = () => {
@@ -36,52 +34,9 @@ const activeDiscount = () => {
     }
   });
 };
-const submit = async (options) => {
-  const {
-    e, good, discountCheckbox, tableBody, id, form
-  } = options
-  const target = e.target;
-  e.preventDefault();
-  const formData = new FormData(target);
-  formData.set('discount', discountCheckbox.checked);
-  const newGood = Object.fromEntries(formData);
-  newGood.id = id.textContent;
-  if (form.image.files.length > 0) {
-    const imgTobase64 = await toBase64(newGood.image);
-    newGood.image = imgTobase64;
-  }
-  if (good) {
-    newGood.image = good.image;
-  }
-  if (good) {
-    await loadGods({
-      id: good.id,
-      requestMethod: 'PATCH',
-      requestBody: newGood,
-    });
-    const { data } = await loadGods({});
-    console.log('data: ', data);
-    upDateRow(data.goods, tableBody);
-  } else {
-    const { response } = await loadGods({
-      requestMethod: 'POST', requestBody: newGood,
-    },
-      (err) => {
-        if (err) {
-          console.log('err: ', err);
-          modalError();
-        }
-      },
-    );
-    if (response.ok) {
-      const { data } = await loadGods({});
-      addNewGoodPage(data.goods, newGood, tableBody);
-    }
-  }
-  form.reset();
-  document.querySelector('.overlay').classList.remove('active');
-};
 
+
+let submit = null;
 
 const submitForm = (good = undefined) => {
   const discountCheckbox = document.getElementById('discount');
@@ -100,6 +55,7 @@ const submitForm = (good = undefined) => {
 
   form.image.addEventListener('change', () => {
     const image = form.image.files[0];
+    console.log('form.image.files[0]: ', form.image.files[0]);
     if (image.size > 1000000) {
       errImg.style.display = 'block';
       img.style.display = 'none';
@@ -109,13 +65,61 @@ const submitForm = (good = undefined) => {
       img.style.display = 'block';
     }
   });
-  form.removeEventListener('submit', (e) => {
-    submit({ e, good, discountCheckbox, tableBody, id, form });
-  });
-  form.addEventListener('submit', (e) => {
-    submit({ e, good, discountCheckbox, tableBody, id, form });
-    console.log('submitHandler: ', submit);
-  });
+  if (submit) {
+    submit = null;
+  } else {
+    form.addEventListener('submit', (e) => {
+      submit({ e, good, discountCheckbox, tableBody, id, form });
+    });
+  }
+  submit = async (options) => {
+    const {
+      e, good, discountCheckbox, tableBody, id, form
+    } = options;
+    const target = e.target;
+    e.preventDefault();
+    const formData = new FormData(target);
+    formData.set('discount', discountCheckbox.checked);
+    const newGood = Object.fromEntries(formData);
+    console.log('newGood: ', newGood);
+    if (form.image.files.length > 0) {
+      const imgTobase64 = await toBase64(newGood.image);
+      newGood.image = imgTobase64;
+    }
+    if (good) {
+      newGood.image = good.image;
+    }
+    if (good) {
+      await loadGods({
+        id: good.id,
+        requestMethod: 'PATCH',
+        requestBody: newGood,
+      });
+      const { data } = await loadGods({});
+      console.log('data: ', data);
+      upDateRow(data.goods, tableBody);
+    } else {
+      const { response } = await loadGods({
+        requestMethod: 'POST', requestBody: newGood,
+      },
+        (err) => {
+          if (err) {
+            console.log('err: ', err);
+            modalError();
+          }
+        },
+      );
+      if (response.ok) {
+        const { data } = await loadGods({});
+        if (data.goods) {
+          console.log('data: ', data.goods);
+          addNewGoodPage(data.goods, tableBody);
+        }
+      }
+    }
+    form.reset();
+    document.querySelector('.overlay').classList.remove('active');
+  };
 };
 
 const deleteGood = (goods) => {
@@ -159,7 +163,6 @@ const editGods = () => {
   const formModal = document.querySelector('.modal__form');
   const modal = document.querySelector('.overlay');
   const img = document.querySelector('.image-container');
-  const btnSubmit = document.querySelector('.modal__submit');
   editBtn.forEach((button) => {
     button.addEventListener('click', async e => {
       const target = e.target;
@@ -173,8 +176,14 @@ const editGods = () => {
       formModal.units.value = good.units;
       formModal.count.value = good.count;
       formModal.price.value = good.price;
-      img.style.display = 'block';
-      img.src = `http://localhost:3000/${good.image}`;
+
+      if (regExpNotImg.test(good.image)) {
+        img.style.display = 'none';
+      } else {
+        img.style.display = 'block';
+        img.src = `http://localhost:3000/${good.image}`;
+      }
+
       formModal.total.value = `$${good.count * good.price}`;
       modal.classList.add('active');
       submitForm(good);
@@ -190,8 +199,8 @@ const controlModal = (modal) => {
     form.reset();
     img.style.display = 'none';
     id.textContent = randomNumber();
-    submitForm();
     modal.classList.add('active');
+    submitForm();
   };
   const closeModal = () => {
     modal.classList.remove('active');
@@ -206,6 +215,16 @@ const controlModal = (modal) => {
       closeModal();
     }
   });
+};
+
+const addNewGoodPage = (goods, tableBody) => {
+  const newGood = goods.slice(-1);
+  tableBody.append(createRow(...newGood, (goods.length - 1)));
+  console.log('newGood: ', newGood);
+  deleteGood(newGood);
+  openPic();
+  editGods();
+  totalPriceElem();
 };
 
 const upDateRow = (goods, tbody) => {

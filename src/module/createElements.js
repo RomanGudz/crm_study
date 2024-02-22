@@ -9,6 +9,8 @@ const {
   getCategory,
 } = data;
 
+const regExpNotImg = /\/notimage/i;
+
 const createContainer = () => {
   const container = document.createElement('div');
   container.classList.add('container');
@@ -186,6 +188,7 @@ const createRow = (item, index) => {
     classTable: 'table__btn',
     classButton: elem,
   }));
+
   buttons[0].setAttribute('data-pic', item.image);
 
   tdBtnWrapper.append(...buttons);
@@ -199,6 +202,12 @@ const createRow = (item, index) => {
     tdTotal,
     tdBtnWrapper,
   );
+  const trImage = tr.querySelector('.table__btn_pic');
+  if (regExpNotImg.test(trImage.getAttribute('data-pic'))) {
+    trImage.classList.remove('table__btn_pic');
+    trImage.classList.add('table__btn_pic-not-image');
+    trImage.style.pointerEvents = 'none';
+  }
   return tr;
 };
 const renderGoods = (array) => {
@@ -527,4 +536,5 @@ export default {
   createRow,
   deleteModal,
   modalError,
+  regExpNotImg,
 };
